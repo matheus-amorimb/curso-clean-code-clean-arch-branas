@@ -8,7 +8,7 @@ public class AccountBuilder
     private string _name = "Matheus Batista";
     private string _email = "matheus@gmail.com";
     private string _cpf = "12345678900";
-    private string _carPlate = "ABC-1234";
+    private string _carPlate = "ABC1234";
     private bool _isPassenger = false;
     private bool _isDriver = true;
 
