@@ -87,8 +87,18 @@ public class SignupTest : IDisposable
         var account = AccountBuilder.New().WithCpf(invalidCpf).Build();
         Func<Task> action = async() => await _signUp.Execute(account);
         await action.Should().ThrowAsync<ArgumentException>().WithMessage("Cpf invalid.");
+    }    
+    
+    [Theory]
+    [InlineData("")]
+    [InlineData("AB91486")]
+    [InlineData("ABCDEFG")]
+    public async void SignUp_WithAnInvalidCarPlate_ThrowsAnException(string invalidCarPlate)
+    {
+        var account = AccountBuilder.New().IsDriver().WithCarPlate(invalidCarPlate).Build();
+        Func<Task> action = async() => await _signUp.Execute(account);
+        await action.Should().ThrowAsync<ArgumentException>().WithMessage("Car Plate invalid.");
     }
-
 
     public void Dispose()
     {
