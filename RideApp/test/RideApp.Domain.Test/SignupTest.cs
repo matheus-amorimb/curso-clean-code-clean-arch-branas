@@ -13,10 +13,9 @@ namespace RideApp.Domain.Test;
 
 public class SignupTest : IDisposable
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly AppDbContext _dbContext;
     private readonly SignUp _signUp;
-    private readonly Mock<IAccountRepository> _mock;
+    private readonly AccountService _accountService;
     
     public SignupTest()
     {
@@ -24,10 +23,12 @@ public class SignupTest : IDisposable
         serviceCollection.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql("Host=localhost;Port=5432;Database=cccc;Username=postgres;Password=148036"));
         serviceCollection.AddScoped<SignUp>();
+        serviceCollection.AddScoped<AccountService>();
         serviceCollection.AddTransient<IAccountRepository, AccountRepository>();
-        _serviceProvider = serviceCollection.BuildServiceProvider();
-        _dbContext = _serviceProvider.GetRequiredService<AppDbContext>();
-        _signUp = _serviceProvider.GetRequiredService<SignUp>();
+        IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        _dbContext = serviceProvider.GetRequiredService<AppDbContext>();
+        _signUp = serviceProvider.GetRequiredService<SignUp>();
+        _accountService = serviceProvider.GetRequiredService<AccountService>();
         _dbContext.Database.EnsureCreated();
     }
     
@@ -40,14 +41,17 @@ public class SignupTest : IDisposable
             Name = "Matheus Batista",
             Email = "matheus123@gmail.com",
             Cpf = "12345678900",
-            CarPlate = "ABC-1234",
+            CarPlate = "ABC1234",
             IsPassenger = false,
             IsDriver = true
         };
         
         var account = new Account(accountExpected.Id, accountExpected.Name, accountExpected.Email, accountExpected.Cpf, accountExpected.CarPlate, accountExpected.IsPassenger, accountExpected.IsDriver);
         var accountCreatedId = await _signUp.Execute(account);
-        accountExpected.Should().NotBeNull();
+        var accountCreated = await _accountService.GetAccount(accountCreatedId);
+        accountCreatedId.Should().Be(accountExpected.Id);
+        accountCreated?.Name.Should().Be(accountExpected.Name);
+        accountCreated?.Email.Should().Be(accountExpected.Email);
     }
 
     [Fact]
@@ -60,19 +64,21 @@ public class SignupTest : IDisposable
         await action.Should().ThrowAsync<ArgumentException>().WithMessage("Email already in use.");
     }
 
-    [Fact]
-    public async void SignUp_WithAnInvalidName_ThrowsAnException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("matheus")]
+    public async void SignUp_WithAnInvalidName_ThrowsAnException(string invalidName)
     {
-        var invalidName = "Joe4 Doe";
         var account = AccountBuilder.New().WithName(invalidName).Build();
         Func<Task> action = async() => await _signUp.Execute(account);
         await action.Should().ThrowAsync<ArgumentException>().WithMessage("Name invalid.");
     }    
     
-    [Fact]
-    public async void SignUp_WithAnInvalidEmail_ThrowsAnException()
+    [Theory]
+    [InlineData("matheus@")]
+    [InlineData("matheus@gmail")]
+    public async void SignUp_WithAnInvalidEmail_ThrowsAnException(string invalidEmail)
     {
-        var invalidEmail = "jose@";
         var account = AccountBuilder.New().WithEmail(invalidEmail).Build();
         Func<Task> action = async() => await _signUp.Execute(account);
         await action.Should().ThrowAsync<ArgumentException>().WithMessage("Email invalid.");
