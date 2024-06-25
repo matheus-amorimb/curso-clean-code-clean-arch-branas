@@ -40,6 +40,12 @@ public class AccountBuilder
     {
         _carPlate = carPlate;
         return this;
+    }    
+    public AccountBuilder IsDriver()
+    {
+        _isDriver = true;
+        _isPassenger = false;
+        return this;
     }
 
     public Account Build()
