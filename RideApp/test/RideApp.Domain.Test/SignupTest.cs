@@ -29,7 +29,7 @@ public class SignupTest : IDisposable
         _dbContext = serviceProvider.GetRequiredService<AppDbContext>();
         _signUp = serviceProvider.GetRequiredService<SignUp>();
         _accountService = serviceProvider.GetRequiredService<AccountService>();
-        _dbContext.Database.EnsureCreated();
+        // _dbContext.Database.EnsureCreated();
     }
     
     [Fact]
