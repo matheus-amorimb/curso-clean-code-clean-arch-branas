@@ -7,7 +7,7 @@ public class AccountBuilder
     private Guid _id = Guid.NewGuid();
     private string _name = "Matheus Batista";
     private string _email = "matheus@gmail.com";
-    private string _cpf = "12345678900";
+    private string _cpf = "14863335750";
     private string _carPlate = "ABC1234";
     private bool _isPassenger = false;
     private bool _isDriver = true;

@@ -2,12 +2,20 @@ using System.Text.RegularExpressions;
 
 namespace RideApp.Domain.Utilities;
 
-public class ValidateCpf
+public class Cpf
 {
     private const int CpfLength = 11;
     private const int FactorFirstDigit = 10;
     private const int FactorSecondDigit = 11;
-    public static bool Execute(string cpf)
+    public string Value { get; }
+    
+    public Cpf(){}
+    public Cpf(string cpf)
+    {
+        Value = _validate(cpf);
+    }
+    
+    private string _validate(string cpf)
     {
         if (string.IsNullOrEmpty(cpf)) throw new ArgumentException("Cpf invalid.");
         string normalizedCpf = RemoveNonDigits(cpf);
@@ -15,7 +23,8 @@ public class ValidateCpf
         CheckAllDigitsTheSame(normalizedCpf);
         var digit1 = CalculateDigit(normalizedCpf, FactorFirstDigit);
         var digit2 = CalculateDigit(normalizedCpf, FactorSecondDigit);
-        return (digit1 == normalizedCpf[9] && digit1 == normalizedCpf[10]);
+        if (!(digit1 == normalizedCpf[9] && digit1 == normalizedCpf[10])) throw new ArgumentException("Cpf invalid.");
+        return normalizedCpf;
     }
 
     private static string RemoveNonDigits(string cpf)

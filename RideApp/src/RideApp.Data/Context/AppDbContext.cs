@@ -9,4 +9,16 @@ public class AppDbContext : DbContext
     
     public DbSet<Account> Accounts { get; init; }
     public DbSet<Ride> Rides { get; init; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Account>(entity =>
+        {
+            entity.OwnsOne(e => e.Cpf)
+                .Property(cpf => cpf.Value)
+                .HasColumnName("Cpf");
+        });
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

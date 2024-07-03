@@ -15,7 +15,7 @@ public class SignupTest : IDisposable
 {
     private readonly AppDbContext _dbContext;
     private readonly SignUp _signUp;
-    private readonly AccountService _accountService;
+    private readonly GetAccount _getAccount;
     
     public SignupTest()
     {
@@ -23,12 +23,12 @@ public class SignupTest : IDisposable
         serviceCollection.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql("Host=localhost;Port=5432;Database=cccc;Username=postgres;Password=148036"));
         serviceCollection.AddScoped<SignUp>();
-        serviceCollection.AddScoped<AccountService>();
+        serviceCollection.AddScoped<GetAccount>();
         serviceCollection.AddTransient<IAccountRepository, AccountRepository>();
         IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
         _dbContext = serviceProvider.GetRequiredService<AppDbContext>();
         _signUp = serviceProvider.GetRequiredService<SignUp>();
-        _accountService = serviceProvider.GetRequiredService<AccountService>();
+        _getAccount = serviceProvider.GetRequiredService<GetAccount>();
         // _dbContext.Database.EnsureCreated();
     }
     
@@ -40,7 +40,7 @@ public class SignupTest : IDisposable
             Id = Guid.NewGuid(),
             Name = "Matheus Batista",
             Email = "matheus123@gmail.com",
-            Cpf = "12345678900",
+            Cpf = "14863335750",
             CarPlate = "ABC1234",
             IsPassenger = false,
             IsDriver = true
@@ -48,7 +48,7 @@ public class SignupTest : IDisposable
         
         var account = new Account(accountExpected.Id, accountExpected.Name, accountExpected.Email, accountExpected.Cpf, accountExpected.CarPlate, accountExpected.IsPassenger, accountExpected.IsDriver);
         var accountCreatedId = await _signUp.Execute(account);
-        var accountCreated = await _accountService.GetAccount(accountCreatedId);
+        var accountCreated = await _getAccount.Execute(accountCreatedId);
         accountCreatedId.Should().Be(accountExpected.Id);
         accountCreated?.Name.Should().Be(accountExpected.Name);
         accountCreated?.Email.Should().Be(accountExpected.Email);

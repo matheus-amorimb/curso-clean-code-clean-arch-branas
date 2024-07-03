@@ -5,20 +5,15 @@ using RideApp.Domain.Utilities;
 
 namespace RideApp.Domain.UseCases;
 
-public class SignUp
+public class SignUp(IAccountRepository accountRepository) : IUseCase<Account, Guid>
 {
-    private readonly IAccountRepository _accountRepository;
-    public SignUp(IAccountRepository account)
-    {
-        _accountRepository = account;
-    }
-
+    private readonly IAccountRepository _accountRepository = accountRepository;
+    
     public async Task<Guid> Execute(Account account)
     {
         ValidateEmail(account.Email);
         await ValidateEmailIsNotInUse(account.Email);
         ValidateName(account.Name);
-        ValidateCpf.Execute(account.Cpf);
         if (account.IsDriver) ValidateCarPlate(account.CarPlate);
         var accountCreated = await _accountRepository.Create(account);
         return accountCreated.Id;
