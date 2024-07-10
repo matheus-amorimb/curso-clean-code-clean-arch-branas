@@ -14,7 +14,7 @@ public class Ride : Entity
     public double ToLong { get; private set;}
     public DateTime Timestamp { get; private set;}
     
-    public Ride(){}
+    private Ride(){}
     public Ride(Guid passengerId, Distance from, Distance to)
     {
         PassengerId = passengerId;
@@ -22,5 +22,7 @@ public class Ride : Entity
         FromLong = from.Longitude;
         ToLat = from.Latitude;
         ToLong = from.Longitude;
+        Timestamp = DateTime.UtcNow;
+        Status = "requested";
     }
 }
