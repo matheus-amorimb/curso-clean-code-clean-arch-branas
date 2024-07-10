@@ -90,9 +90,8 @@ public class SignupTest : IDisposable
     [InlineData("085.432.125-56")]
     public async void SignUp_WithAnInvalidCpf_ThrowsAnException(string invalidCpf)
     {
-        var account = AccountBuilder.New().WithCpf(invalidCpf).Build();
-        Func<Task> action = async() => await _signUp.Execute(account);
-        await action.Should().ThrowAsync<ArgumentException>().WithMessage("Cpf invalid.");
+        Func<Account> action = () => AccountBuilder.New().WithCpf(invalidCpf).Build();
+        action.Should().Throw<ArgumentException>().WithMessage("Cpf invalid.");
     }    
     
     [Theory]
