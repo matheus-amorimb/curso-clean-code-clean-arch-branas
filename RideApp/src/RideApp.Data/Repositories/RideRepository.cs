@@ -6,6 +6,6 @@ namespace RideApp.Domain;
 
 public class RideRepository : Repository<Ride>, IRideRepository
 {
-    protected RideRepository(AppDbContext context) : base(context)
+    public RideRepository(AppDbContext context) : base(context)
     { }
 }
