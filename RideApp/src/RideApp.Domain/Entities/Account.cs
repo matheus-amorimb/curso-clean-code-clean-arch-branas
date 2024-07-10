@@ -4,7 +4,7 @@ namespace RideApp.Domain.Entities;
 
 public class Account : Entity
 {
-    public Account(){}
+    private Account(){}
     
     public Account(string name, string email, string cpf, string carPlate, bool isPassenger, bool isDriver)
     {

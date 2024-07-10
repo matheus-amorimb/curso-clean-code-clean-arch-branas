@@ -12,10 +12,10 @@ public class Cpf
     public Cpf(){}
     public Cpf(string cpf)
     {
-        Value = _validate(cpf);
+        Value = Validate(cpf);
     }
     
-    private string _validate(string cpf)
+    private string Validate(string cpf)
     {
         if (string.IsNullOrEmpty(cpf)) throw new ArgumentException("Cpf invalid.");
         string normalizedCpf = RemoveNonDigits(cpf);
@@ -23,7 +23,9 @@ public class Cpf
         CheckAllDigitsTheSame(normalizedCpf);
         var digit1 = CalculateDigit(normalizedCpf, FactorFirstDigit);
         var digit2 = CalculateDigit(normalizedCpf, FactorSecondDigit);
-        if (!(digit1 == normalizedCpf[9] && digit1 == normalizedCpf[10])) throw new ArgumentException("Cpf invalid.");
+        Console.WriteLine(digit1);
+        Console.WriteLine(digit2);
+        if (!(digit1 == (normalizedCpf[9] - '0') && digit2 == (normalizedCpf[10] - '0'))) throw new ArgumentException("Cpf invalid.");
         return normalizedCpf;
     }
 
@@ -44,7 +46,7 @@ public class Cpf
         {
             if (factor > 1)
             {
-                total += (int)digit * factor;
+                total += (digit - '0') * factor;
                 factor--;
             }
         }
