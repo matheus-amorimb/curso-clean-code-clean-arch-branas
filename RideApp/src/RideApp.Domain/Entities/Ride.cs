@@ -25,4 +25,14 @@ public class Ride : Entity
         Timestamp = DateTime.UtcNow;
         Status = "requested";
     }
+
+    public void SetDriverId(Guid driverId)
+    {
+        DriverId = driverId;
+    }
+
+    public void SetStatus(string status)
+    {
+        Status = status;
+    }
 }
