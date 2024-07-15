@@ -6,11 +6,11 @@ public class AccountBuilder
 {
     private Guid _id = Guid.NewGuid();
     private string _name = "Matheus Batista";
-    private string _email = "matheus@gmail.com";
+    private string _email = $"matheus{new Random().Next(100, 1000)}@email.com";
     private string _cpf = "14863335750";
     private string _carPlate = "ABC1234";
-    private bool _isPassenger = false;
-    private bool _isDriver = true;
+    private bool _isPassenger = true;
+    private bool _isDriver = false;
 
 
     public static AccountBuilder New()
