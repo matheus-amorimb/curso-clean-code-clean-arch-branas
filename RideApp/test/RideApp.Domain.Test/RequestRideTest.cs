@@ -14,19 +14,40 @@ public class RequestRideTest(TestFixture testFixture) : IClassFixture<TestFixtur
     private readonly AppDbContext _dbContext = testFixture.DbContext;
     private readonly SignUp _signUp = testFixture.SignUp;
     private readonly RequestRide _requestRide = testFixture.RequestRide;
+    private readonly Distance _from = new Distance(40.712776, -74.005974);
+    private readonly Distance _to = new Distance(40.802606, -74.005974);
 
     [Fact]
     public async void RequestRide_Successfully()
     {
-        var email = $"matheus{new Random().Next(100, 1000)}@email.com";
-        var account = AccountBuilder.New().WithEmail(email).Build();
+        var account = AccountBuilder.New().Build();
         var accountCreatedId = await _signUp.Execute(account);
-        var from = new Distance(40.712776, -74.005974);
-        var to = new Distance(40.802606, -74.005974);
-        var rideId = await _requestRide.Execute(accountCreatedId, from, to);
+        var rideId = await _requestRide.Execute(accountCreatedId, this._from, this._to);
         rideId.Should().NotBeEmpty();
-        _requestRide.ride.Status.Should().Be("requested");
-        _requestRide.ride.Timestamp.Date.Should().Be(DateTime.Today);
+        _requestRide.Ride.Status.Should().Be("requested");
+        _requestRide.Ride.Timestamp.Date.Should().Be(DateTime.Today);
+    }
+
+    [Fact]
+    public async void RequestRide_WithAnDriverAccount_ThrowsAnException()
+    {
+        var account = AccountBuilder.New()
+            .IsDriver().
+            Build();
+        var accountCreatedId = await _signUp.Execute(account);
+        Func<Task> requestRide = async () => await _requestRide.Execute(accountCreatedId, this._from, this._to);
+        await requestRide.Should().ThrowAsync<ArgumentException>().WithMessage("Driver cannot request a ride");
+    }
+
+    [Fact]
+    public async void RequestRide_WithAnUncompletedRide_ThrowsAnException()
+    {
+        var account = AccountBuilder.New().Build();
+        var accountCreatedId = await _signUp.Execute(account);
+        await _requestRide.Execute(accountCreatedId, this._from, this._to);
+        Func<Task> requestSecondRide = async () => await _requestRide.Execute(accountCreatedId, this._from, this._to);
+        await requestSecondRide.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Passenger has an uncompleted ride.");
     }
     
 }
