@@ -4,5 +4,6 @@ namespace RideApp.Domain.Interfaces;
 
 public interface IRideRepository : IRepository<Ride>
 {
-    Task<Boolean> HasUncompletedRide(Guid passengerId);
+    Task<Boolean> PassengerHasUncompletedRide(Guid passengerId);
+    Task<Boolean> DriverHasUncompletedRide(Guid driverId);
 }

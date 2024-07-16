@@ -7,10 +7,21 @@ namespace RideApp.Domain;
 
 public class RideRepository(AppDbContext context) : Repository<Ride>(context), IRideRepository
 {
-    public async Task<bool> HasUncompletedRide(Guid passengerId)
+    public async Task<bool> PassengerHasUncompletedRide(Guid passengerId)
     {
-        var uncompletedRide = await Context.Rides.FromSqlRaw("SELECT * FROM \"Rides\" WHERE \"Status\" != 'completed' AND \"PassengerId\" = {0}", passengerId).ToListAsync();
+        var uncompletedRide = await Context
+            .Rides
+            .FromSqlRaw("SELECT * FROM rides WHERE status != 'completed' AND passenger_id = {0}", passengerId)
+            .ToListAsync();
         return uncompletedRide.Any();
-        // return await Context.Rides.AnyAsync(ride => ride.Status != "completed");
+    }
+
+    public async Task<bool> DriverHasUncompletedRide(Guid driverId)
+    {
+        var uncompletedRide = await Context
+            .Rides
+            .FromSql($"SELECT * FROM rides WHERE status != 'completed' AND driver_id = {driverId}")
+            .ToListAsync();
+        return uncompletedRide.Any();
     }
 }
