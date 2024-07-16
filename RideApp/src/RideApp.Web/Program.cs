@@ -14,7 +14,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
     var postgresConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    optionsBuilder.UseNpgsql(postgresConnectionString);
+    optionsBuilder.UseNpgsql(postgresConnectionString)
+        .UseSnakeCaseNamingConvention();
 });
 
 builder.Services.AddTransient<IAccountRepository, AccountRepository>();

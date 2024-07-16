@@ -23,7 +23,8 @@ public class TestFixture : IDisposable
         //Context
         serviceCollection.AddDbContext<AppDbContext>(builder =>
         {
-            builder.UseNpgsql("Host=localhost;Port=5432;Database=cccc;Username=postgres;Password=148036");
+            builder.UseNpgsql("Host=localhost;Port=5432;Database=cccc;Username=postgres;Password=148036")
+                .UseSnakeCaseNamingConvention();
         });
         
         //UseCases
