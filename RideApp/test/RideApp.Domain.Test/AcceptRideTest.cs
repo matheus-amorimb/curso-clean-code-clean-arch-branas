@@ -38,4 +38,63 @@ public class AcceptRideTest(TestFixture testFixture) : IClassFixture<TestFixture
         ride.DriverId.Should().Be(driverAccountId);
         ride.Status.Should().Be("accepted");
     } 
+    
+    [Fact]
+    public async void NotADriver_AcceptsRide_ThrowAnException()
+    {
+        //Arrange
+        var userAccount = AccountBuilder.New().Build();
+        var userAccountId = await _signUp.Execute(userAccount);
+        var rideId = await _requestRide.Execute(userAccountId, this._from, this._to);
+        
+        //Act
+        Func<Task> acceptRide = async () =>  await _acceptRide.Execute(rideId, userAccountId);
+        
+        //Assert
+        await acceptRide.Should()
+            .ThrowAsync<ArgumentException>()
+            .WithMessage("Only drivers can accept a ride.");
+    } 
+    
+    [Fact]
+    public async void AcceptsRide_WithStatusNotRequested_ThrowAnException()
+    {
+        //Arrange
+        var userAccount = AccountBuilder.New().Build();
+        var driverAccount = AccountBuilder.New()
+            .IsDriver()
+            .Build();
+        var userAccountId = await _signUp.Execute(userAccount);
+        var driverAccountId = await _signUp.Execute(driverAccount);
+        var rideId = await _requestRide.Execute(userAccountId, this._from, this._to);
+        await _acceptRide.Execute(rideId, driverAccountId);
+        
+        //Act
+        Func<Task> acceptRide = async () => await _acceptRide.Execute(rideId, driverAccountId);
+        
+        //Assert
+        await acceptRide.Should().ThrowAsync<ArgumentException>().WithMessage("Only ride with status requested can be accepted.");
+    } 
+    
+    [Fact]
+    public async void DriverAcceptsRide_WithUncompletedRide_ThrowAnException()
+    {
+        //Arrange
+        var userAccount = AccountBuilder.New().Build();
+        var driverAccount = AccountBuilder.New()
+            .IsDriver()
+            .Build();
+        var userAccountId = await _signUp.Execute(userAccount);
+        var driverAccountId = await _signUp.Execute(driverAccount);
+        var rideId = await _requestRide.Execute(userAccountId, this._from, this._to);
+        await _acceptRide.Execute(rideId, driverAccountId);
+        
+        //Act
+        Func<Task> acceptRide = async () => await _acceptRide.Execute(rideId, driverAccountId);
+        
+        //Assert
+        await acceptRide.Should().ThrowAsync<ArgumentException>().WithMessage("Driver must complete ongoing ride before accepting a new one.");
+    } 
+    
+    
 }
