@@ -14,7 +14,7 @@ public class RequestRide(IRideRepository rideRepository, IAccountRepository acco
     {
         var account = await _accountRepository.GetById(passengerId);
         if (account.IsDriver) throw new ArgumentException("Driver cannot request a ride");
-        var hasUncompletedRide = await _rideRepository.HasUncompletedRide(passengerId);
+        var hasUncompletedRide = await _rideRepository.PassengerHasUncompletedRide(passengerId);
         if (hasUncompletedRide)
             throw new ArgumentException("Passenger has an uncompleted ride.");
         Ride = await _rideRepository.Create(new Ride(passengerId, from, to));
